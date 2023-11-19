@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Review</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            max-width: 400px;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        input {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            display: inline-block;
+        }
+
+        input:focus {
+            border-color: #4caf50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: calc(100% - 24px);
+            box-sizing: border-box;
+            display: inline-block;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        #result-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            color: #333;
+            font-weight: bold;
+            text-align: left;
+            max-width: 600px;
+            width: 100%;
+            box-sizing: border-box;
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #result-container span {
+            color: #4caf50;
+        }
+
+        #error-message {
+            color: #ff0000;
+            margin-bottom: 10px;
+        }
+
+        #result span {
+            color: #4caf50;
+        }
+    </style>
+    <script>
+        function reviewAttendance() {
+            // Get input values
+            var cur = document.getElementById("curClasses").value.trim();
+            var tot = document.getElementById("totClasses").value.trim();
+            var con = document.getElementById("conPercentage").value.trim();
+
+            // Check if any field is empty
+            if (cur === '' || tot === '' || con === '') {
+                document.getElementById("error-message").innerText = "Please fill in all the details.";
+                return;
+            }
+
+            // Clear any previous error message
+            document.getElementById("error-message").innerText = "";
+
+            // Continue with calculation
+            cur = parseInt(cur);
+            tot = parseInt(tot);
+            con = parseInt(con);
+
+            var p = con / 100;
+            var a = p * tot - cur;
+            var b = 1 - p;
+            var x = a / b;
+            var i = Math.ceil(x);
+            var d = Math.ceil(i / 8);
+            var current = (cur / tot) * 100;
+
+            // Calculate additional details
+            var remainingClasses = tot - cur;
+            var weeklyClassesNeeded = Math.ceil(remainingClasses / d);
+
+            var resultMessage = "Your current attendance is <span style='color: #4caf50;'>" + current.toFixed(2) + "%</span>.<br>";
+            resultMessage += "The number of classes required for satisfactory attendance is <span style='color: #4caf50;'>" + i + "</span>.<br>";
+            var t = tot + i;
+            var c = cur + i;
+            resultMessage += "If so, the total classes attended will be <span style='color: #4caf50;'>" + c + "</span>.<br>";
+            resultMessage += "The total classes conducted will be <span style='color: #4caf50;'>" + t + "</span>.<br>";
+
+            if (weeklyClassesNeeded <= 8) {
+                resultMessage += "This can be achieved within <span style='color: #4caf50;'>" + d + "</span> working days if attending 8 classes per day.<br>";
+            } else {
+                resultMessage += "To achieve this, consider attending approximately <span style='color: #4caf50;'>" + weeklyClassesNeeded + "</span> classes per week.<br>";
+            }
+
+            // Display the result
+            document.getElementById("result").innerHTML = resultMessage;
+            document.getElementById("result-container").style.display = "block";
+
+            // Add animation to the button
+            var calculateButton = document.getElementById("calculateButton");
+            calculateButton.style.backgroundColor = "#4caf50";
+            setTimeout(function () {
+                calculateButton.style.backgroundColor = "#45a049";
+            }, 300);
+        }
+    </script>
+</head>
+<body>
+    <h1>Attendance Review</h1>
+    <form>
+        <div id="error-message"></div>
+        Enter the total classes attended: <input type="text" id="curClasses"><br>
+        Enter the total classes conducted: <input type="text" id="totClasses"><br>
+        Enter the desired attendance percentage: <input type="text" id="conPercentage"><br>
+        <button type="button" id="calculateButton" onclick="reviewAttendance()">Review Attendance</button>
+    </form>
+    <div id="result-container">
+        <div id="result"></div>
+    </div>
+</body>
+</html>
